@@ -3,16 +3,25 @@
 #include <stdlib.h>
 #define GAMERAWS 4
 #define GAMECOLS 4
-int numbers[GAMECOLS*GAMERAWS] = {0};
+int grid[GAMECOLS*GAMERAWS] = {0};
 
 int stack[4] = {0};
 int top = -1;
 int mergedlayer = -1;
-int state = 0;
+int score = 0;
+
+bool slid = false;
+
+typedef enum direction{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+}direction;
 
 bool is_full(){
     for (int i = 0; i < 16; i++){
-        if (numbers[i] == 0)
+        if (grid[i] == 0)
             return false;
     }
     return true;
@@ -24,8 +33,8 @@ void number_generator(){
 
     while (true){
         int pos = rand()%16;
-        if (numbers[pos] == 0){
-            numbers[pos] = 2 + rand()%2*2;
+        if (grid[pos] == 0){
+            grid[pos] = 2 + rand()%2*2;
             break;
         }
     }
@@ -41,7 +50,7 @@ void push_and_merge_element(int value){
     }
 
     stack[top] += value;
-    state += stack[top];
+    score += stack[top];
     mergedlayer = top;
 }
 
@@ -57,41 +66,34 @@ void print_stack(){
     printf("\nmergedlayer:%d\ntop:%d\n\n",mergedlayer,top);
 }
 
-void slide_up(){
-    for (int j = 0;j < 4;j++){
-        for (int i = 0;i < 4; push_and_merge_element(numbers[i++*GAMERAWS+j]));
-        for (int i = 0;i <= 4; i++)
-            numbers[i*GAMERAWS+j] = stack[i];
-        reset_stack();
-    }
-}
-
-void slide_down(){
-    for (int j = 0;j < 4;j++){
-        for (int i = 3;i >= 0; push_and_merge_element(numbers[i--*GAMERAWS+j]));
-        for (int i = 0;i < 4; i++){
-            numbers[i*GAMERAWS+j] = stack[3-i];
+int* get_element(direction direc,int i,int j){
+    switch (direc) {
+        case UP:
+            return &grid[j*GAMERAWS+i]; 
+        case DOWN:
+            return &grid[(3-j)*GAMERAWS+i];
+        case LEFT:
+            return &grid[i*GAMERAWS+j];
+        case RIGHT:
+            return &grid[i*GAMERAWS+(3-j)];
         }
-        reset_stack();
-    }
 }
 
-void slide_left(){
+void slide(direction direc){
     for (int i = 0;i < 4;i++){
-        for (int j = 0;j < 4; push_and_merge_element(numbers[i*GAMERAWS+j++]));
-        for (int j = 0;j < 4; j++){
-            numbers[i*GAMERAWS+j] = stack[j];
-        }
-        reset_stack();
-    }
-}
+        int before[4];
+        for (int j = 0;j < 4;j++)
+            before[j] = *get_element(direc,i,j);
 
-void slide_right(){
-    for (int i = 0;i < 4;i++){
-        for (int j = 3;j >= 0; push_and_merge_element(numbers[i*GAMERAWS+j--]));
-        for (int j = 0; j < 4; j++){
-            numbers[i*GAMERAWS+j] = stack[3-j];
+        for (int j = 0;j < 4;j++)
+            push_and_merge_element(*get_element(direc,i,j));
+
+        for (int j = 0;j < 4;j++){
+            *get_element(direc,i,j) = stack[j]; 
+            if (stack[j] != before[j])
+                slid = true;
         }
+
         reset_stack();
     }
 }

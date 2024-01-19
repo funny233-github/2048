@@ -38,9 +38,67 @@ void test_push_and_merge_element(){
         print_stack();
     }
 
+    reset_stack();
+
+}
+
+void print_grid(){
+    for (int i = 0;i < 4;i++){
+        for (int j = 0;j < 4;printf("%d ",grid[i*GAMECOLS+j++]));
+        printf("\n");
+    }
+}
+
+void test_slide(){
+    int test1[16] = {
+        2,0,0,0,
+        2,0,0,0,
+        0,0,0,0,
+        0,0,0,0,
+    };
+    for (int i = 0;i < 16;i++)
+        grid[i] = test1[i];
+    int answer1[16] = {
+        4,0,0,0,
+        0,0,0,0,
+        0,0,0,0,
+        0,0,0,0,
+    };
+    slide(UP);
+    for (int i = 0;i < 16;i++){
+        if (grid[i] != answer1[i]){
+            fprintf(stderr,"Error: test_slide 1 not success\n");
+            print_grid(); 
+            break;
+        }
+    }
+
+    int test2[16] = {
+        0,0,0,0,
+        2,0,4,0,
+        2,2,0,0,
+        2,0,0,0,
+    };
+    for (int i = 0;i < 16;i++)
+        grid[i] = test2[i];
+    int answer2[16] = {
+        4,2,4,0,
+        2,0,0,0,
+        0,0,0,0,
+        0,0,0,0,
+    };
+    slide(UP);
+    for (int i = 0;i < 16;i++){
+        if (grid[i] != answer2[i]){
+            fprintf(stderr,"Error: test_slide 2 not success\n");
+            print_grid(); 
+            break;
+        }
+    }
     
 }
 
 int main(){
     test_push_and_merge_element();
+    test_slide();
 }

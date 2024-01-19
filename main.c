@@ -10,10 +10,10 @@ void start_curses(){
 }
 
 
-void update_windows_and_state(){
+void update_windows_and_score(){
 
     clear();
-    mvprintw(0,0,"state:%d",state);
+    mvprintw(0,0,"score:%d",score);
     refresh();
 
     WINDOW * windows[16];
@@ -22,8 +22,8 @@ void update_windows_and_state(){
             windows[i*GAMERAWS+j] = newwin(10,20,i*10+1,j*20+1);
             box(windows[i*GAMERAWS+j],0,0);
 
-            if (numbers[i*GAMERAWS+j] != 0)
-                mvwprintw(windows[i*GAMERAWS+j],4,9,"%d",numbers[i*4+j]);
+            if (grid[i*GAMERAWS+j] != 0)
+                mvwprintw(windows[i*GAMERAWS+j],4,9,"%d",grid[i*4+j]);
 
             wrefresh(windows[i*GAMERAWS+j]);
             wclear(windows[i*GAMERAWS+j]);
@@ -37,7 +37,7 @@ int main(){
 
     refresh();
     number_generator();
-    update_windows_and_state();
+    update_windows_and_score();
 
     while (true){
         char key = getch();
@@ -45,23 +45,26 @@ int main(){
             break;
         switch (key) {
             case 'w':
-                slide_up();
+                slide(UP);
                 break;
             case 's':
-                slide_down();
+                slide(DOWN);
                 break;
             case 'a':
-                slide_left();
+                slide(LEFT);
                 break;
             case 'd':
-                slide_right();
+                slide(RIGHT);
                 break;
             default:
                 continue;
                 break;
         }
-        number_generator();
-        update_windows_and_state();
+        if (slid){
+            slid = false;
+            number_generator();
+        }
+        update_windows_and_score();
     }
     endwin();
 }
