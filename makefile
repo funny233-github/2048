@@ -1,6 +1,6 @@
 SOURCES = main.c
 OBJECTS = main
-DEPENDENCY = untils.c
+DEPENDENCY = untils.c display.c
 TEST = test.c
 TEST_OBJECT = test
 
