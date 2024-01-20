@@ -6,6 +6,10 @@
 int main(){
     srand(time(NULL));
     start_curses();
+    if(has_colors() == FALSE){
+        printf("has colors : false");
+        return -1;
+    }
 
     refresh();
     number_generator();
