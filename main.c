@@ -36,10 +36,11 @@ int main(){
                 continue;
                 break;
         }
-        if (slid){
-            slid = false;
-            number_generator();
-        }
+        if (!slid)
+            continue;
+
+        slid = false;
+        number_generator();
         update_windows_and_score();
     }
     endwin();

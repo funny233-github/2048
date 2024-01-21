@@ -1,20 +1,21 @@
-SOURCES = main.c
-OBJECTS = main
+OBJECTS = 2048 test display-test
 DEPENDENCY = untils.c display.c
-TEST = test.c
-TEST_OBJECT = test
 
 CC = gcc
 LDFLAGS = -lncurses
 
-all:main test
+all:main test-all
 
-main: $(SOURCES)
-	$(CC) $(LDFLAGS) $(SOURCES) $(DEPENDENCY) -o $(OBJECTS)
+main: main.c
+	$(CC) $(LDFLAGS) main.c $(DEPENDENCY) -o 2048
 
-test: $(TEST) $(DEPENDENCY)
-	$(CC) $(LDFLAGS) $(TEST) $(DEPENDENCY) -o $(TEST_OBJECT)
+test-all: test display-test
+
+test: tests/test.c $(DEPENDENCY)
+	$(CC) $(LDFLAGS) tests/test.c $(DEPENDENCY) -o test
+
+display-test: tests/display-test.c $(DEPENDENCY)
+	$(CC) $(LDFLAGS) tests/display-test.c $(DEPENDENCY) -o display-test
 
 clean:
 	rm -rf $(OBJECTS)
-	rm -rf $(TEST_OBJECT)
