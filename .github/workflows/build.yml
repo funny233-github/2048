@@ -1,0 +1,21 @@
+name: Build artifacts
+on:
+  push:
+
+jobs:
+  build:
+    name: Build artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: sudo apt install -y libncurses-dev
+      - name: Compile and build
+        run: make
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 2048-linux-amd64
+          path: |-
+            2048
+            test
+            display-test
