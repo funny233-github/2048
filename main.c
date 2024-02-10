@@ -3,7 +3,8 @@
 #include "untils.h"
 #include "display.h"
 
-int main(){
+int 
+main(){
     srand(time(NULL));
     start_curses();
     if(has_colors() == FALSE){

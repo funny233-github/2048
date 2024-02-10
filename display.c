@@ -1,12 +1,14 @@
 #include <ncurses.h>
 #include "untils.h"
 
-void start_curses(){
+void 
+start_curses() {
     initscr();
     cbreak();
     noecho();
     curs_set(0);
     start_color();
+
     init_pair(0,COLOR_WHITE,COLOR_BLACK);
     init_pair(1,COLOR_WHITE,COLOR_BLACK);
     init_pair(2,COLOR_MAGENTA,COLOR_BLACK);
@@ -26,20 +28,22 @@ void start_curses(){
 }
 
 
-void update_windows_and_score(){
+void 
+update_windows_and_score() {
 
     clear();
     mvprintw(0,0,"score:%d",score);
     refresh();
 
     WINDOW * windows[16];
-    for (int i = 0; i < 4; i++){
-        for(int j = 0; j < 4; j++){
+    for (int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++) {
             int pos = i*GAMERAWS+j;
-            windows[pos] = newwin(10,20,i*10+1,j*20+1);
-
             int color = 0;
             int numcache = grid[pos];
+
+            windows[pos] = newwin(10,20,i*10+1,j*20+1);
+
             while (numcache != 0){
                 numcache /= 2;
                 color += 1;
@@ -57,5 +61,4 @@ void update_windows_and_score(){
             wrefresh(windows[pos]);
             wclear(windows[pos]);
         }
-    }
 }

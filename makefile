@@ -7,15 +7,15 @@ LDFLAGS = -lncurses
 all:main test-all
 
 main: main.c
-	$(CC) $(LDFLAGS) main.c $(DEPENDENCY) -o 2048
+	$(CC) main.c $(DEPENDENCY) -o 2048 $(LDFLAGS)
 
 test-all: test display-test
 
 test: tests/test.c $(DEPENDENCY)
-	$(CC) $(LDFLAGS) tests/test.c $(DEPENDENCY) -o test
+	$(CC) tests/test.c $(DEPENDENCY) -o test $(LDFLAGS)
 
 display-test: tests/display-test.c $(DEPENDENCY)
-	$(CC) $(LDFLAGS) tests/display-test.c $(DEPENDENCY) -o display-test
+	$(CC) tests/display-test.c $(DEPENDENCY) -o display-test $(LDFLAGS)
 
 clean:
 	rm -rf $(OBJECTS)
