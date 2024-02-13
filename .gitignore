@@ -5,6 +5,9 @@
 # Prerequisites
 *.d
 
+# clang cache
+.cache/
+
 # Object files
 *.o
 *.ko
