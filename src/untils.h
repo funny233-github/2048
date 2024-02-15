@@ -5,8 +5,8 @@
 
 #define PUBLIC(type) type
 
-#define GAMECOLS 5
-#define GAMERAWS 5
+#define GAMECOLS 4
+#define GAMERAWS 4
 #define N_GRID GAMECOLS *GAMERAWS
 
 typedef enum direction {
