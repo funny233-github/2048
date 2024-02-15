@@ -1,99 +1,106 @@
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "untils.h"
+#include <ncurses.h>
+#include <stdlib.h>
+#include <string.h>
 
-int grid[GAMECOLS*GAMERAWS] = {0};
+static data gamedata = {{0}, 0, 0, 0};
 
-int stack[4] = {0};
-int top = -1;
-int mergedlayer = -1;
-int score = 0;
+PUBLIC(int *) getGameGrid() { return gamedata.grid; }
 
-bool slid = false;
+PUBLIC(int) getGameScore() { return gamedata.score; }
 
-bool 
-is_full(){
+PUBLIC(bool) getGameSlid() { return gamedata.slid; }
 
-    for (int i = 0; i < 16; i++)
-        if (grid[i] == 0) return false;
+PUBLIC(bool) gameRaiseError(error_type error) {
+    if (error > SLIDE_ERROR)
+        goto fail;
 
+    gamedata.error = error;
     return true;
+fail:
+    gamedata.error = NORMAL_ERROR;
+    return false;
 }
 
-void 
-number_generator(){
-    if (is_full())
-        return;
+PUBLIC(bool) detectError() {
+    switch (gamedata.error) {
+    case NO_ERROR:
+        return false;
+    case NORMAL_ERROR:
+        endwin();
+        printf("normal error");
+        return true;
+    case INDEX_ERROR:
+        endwin();
+        printf("index error");
+        return true;
+    case GENERATOR_ERROR:
+        endwin();
+        printf("generator error");
+        return true;
+    case SLIDE_ERROR:
+        endwin();
+        printf("slid error");
+        return true;
+    }
+    return false;
+}
 
-    while (true){
-        int pos = rand()%16;
-        if (grid[pos] == 0){
-            grid[pos] = 2 + rand()%2*2;
-            break;
+PUBLIC(bool) number_generator() {
+    int *buffer[N_GRID];
+    int top = 0;
+
+    for (int i = 0; i < N_GRID; i++)
+        if (gamedata.grid[i] == 0)
+            buffer[top++] = &gamedata.grid[i];
+
+    if (top == 0)
+        goto fail;
+
+    *buffer[rand() % (top)] = 2 + rand() % 2 * 2;
+    return true;
+fail:
+    gameRaiseError(GENERATOR_ERROR);
+    return false;
+}
+
+PUBLIC(bool) slide(direction direc) {
+    if (direc != UP && direc != DOWN && direc != LEFT && direc != RIGHT)
+        goto fail;
+
+    gamedata.slid = false;
+    for (int i = 0; i < ((direc == UP || direc == DOWN) ? GAMECOLS : GAMERAWS);
+         i++) {
+        int buffer[MAX_COL_RAW], before[MAX_COL_RAW];
+        int top = 0, skip = -1;
+        memset(buffer, 0, sizeof(buffer));
+        for (int j = 0;
+             j < ((direc == UP || direc == DOWN) ? GAMERAWS : GAMECOLS); j++)
+            before[j] = gamedata.grid[INDEX_BY(direc, i, j)];
+
+        for (int j = 0;
+             j < ((direc == UP || direc == DOWN) ? GAMERAWS : GAMECOLS); j++) {
+            int value = gamedata.grid[INDEX_BY(direc, i, j)];
+            if (value == 0)
+                continue;
+            if (top == 0 || buffer[top - 1] != value || top - 1 <= skip) {
+                buffer[top++] = value;
+                continue;
+            }
+            skip = top - 1;
+            buffer[skip] += value;
+            gamedata.score += value;
+        }
+
+        for (int j = 0;
+             j < ((direc == UP || direc == DOWN) ? GAMERAWS : GAMECOLS); j++) {
+            gamedata.grid[INDEX_BY(direc, i, j)] = buffer[j];
+            if (buffer[j] != before[j])
+                gamedata.slid = true;
         }
     }
+    return true;
+fail:
+    gameRaiseError(GENERATOR_ERROR);
+    return false;
 }
-
-void 
-push_and_merge_element(int value){
-    if (value == 0) return;
-
-    if (top == -1 || stack[top] != value || mergedlayer >= top){
-        stack[++top] = value;
-        return;
-    }
-
-    stack[top] += value;
-    score += stack[top];
-    mergedlayer = top;
-}
-
-void 
-reset_stack(){
-    top = -1;
-    mergedlayer = -1;
-    for (int i = 0;i < 4; stack[i++] = 0);
-}
-
-void 
-print_stack(){
-    printf("\n");
-    for (int i = 0;i < 4; printf("%d--",stack[i++]));
-    printf("\nmergedlayer:%d\ntop:%d\n\n",mergedlayer,top);
-}
-
-int* 
-get_element(direction direc,int i,int j){
-    switch (direc) {
-    case UP:
-        return &grid[j*GAMERAWS+i]; 
-    case DOWN:
-        return &grid[(3-j)*GAMERAWS+i];
-    case LEFT:
-        return &grid[i*GAMERAWS+j];
-    case RIGHT:
-        return &grid[i*GAMERAWS+(3-j)];
-    }
-}
-
-void 
-slide(direction direc){
-    for (int i = 0;i < 4;i++){
-        int before[4];
-        for (int j = 0;j < 4;j++)
-            before[j] = *get_element(direc,i,j);
-
-        for (int j = 0;j < 4;j++)
-            push_and_merge_element(*get_element(direc,i,j));
-
-        for (int j = 0;j < 4;j++){
-            *get_element(direc,i,j) = stack[j]; 
-            if (stack[j] != before[j])
-                slid = true;
-        }
-
-        reset_stack();
-    }
-}
-

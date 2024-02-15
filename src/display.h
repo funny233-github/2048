@@ -1,10 +1,10 @@
 #ifndef DISPLAY
 #define DISPLAY
 
-#include <ncurses.h>
 #include "untils.h"
+#include <ncurses.h>
 
-void start_curses();
-void update_windows_and_score();
+PUBLIC(void) start_curses();
+PUBLIC(void) update_display();
 
 #endif
