@@ -31,7 +31,7 @@ PUBLIC(void) update_display() {
     mvprintw(0, 0, "score:%d", GAME_SCORE);
     refresh();
 
-    WINDOW *windows[16];
+    WINDOW *windows[N_GRID];
     for (int i = 0; i < GAMERAWS; i++)
         for (int j = 0; j < GAMECOLS; j++) {
             int color = 0;

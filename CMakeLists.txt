@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.2)
 
-project(Project2048 VERSION 1.0)
+project(Project2048 VERSION 1.1)
 
 find_package(Curses REQUIRED)
 

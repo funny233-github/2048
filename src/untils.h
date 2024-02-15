@@ -5,8 +5,8 @@
 
 #define PUBLIC(type) type
 
-#define GAMECOLS 4
-#define GAMERAWS 4
+#define GAMECOLS 5
+#define GAMERAWS 5
 #define N_GRID GAMECOLS *GAMERAWS
 
 typedef enum direction {
@@ -42,15 +42,15 @@ typedef struct data {
  */
 
 #define INDEX(i, j)                                                            \
-    ((i >= 0 && j >= 0 && i <= GAMERAWS && j <= GAMECOLS)                      \
+    ((i >= 0 && j >= 0 && i < GAMERAWS && j < GAMECOLS)                        \
          ? ((i)*GAMECOLS + (j))                                                \
          : (gameRaiseError(INDEX_ERROR)))
 
 // i use to scan, j use to buffer
 #define INDEX_BY(direc, i, j)                                                  \
     ((direc == UP || direc == DOWN)                                            \
-         ? ((direc == UP) ? (INDEX(j, i)) : (INDEX(3 - j, i)))                 \
-         : ((direc == LEFT) ? (INDEX(i, j)) : (INDEX(i, 3 - j))))
+         ? ((direc == UP) ? (INDEX(j, i)) : (INDEX(GAMERAWS - 1 - j, i)))      \
+         : ((direc == LEFT) ? (INDEX(i, j)) : (INDEX(i, GAMECOLS - 1 - j))))
 
 #define MAX(a, b) ((a >= b) ? a : b)
 #define MAX_COL_RAW MAX(GAMECOLS, GAMERAWS)
