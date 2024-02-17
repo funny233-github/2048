@@ -6,9 +6,6 @@ find_package(Curses REQUIRED)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
-include_directories(${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
-
-
 file(GLOB SRC_FILES
     "${PROJECT_SOURCE_DIR}/src/*.c"
     "${PROJECT_SOURCE_DIR}/src/*.h"
@@ -24,3 +21,5 @@ configure_file("${CONFIGURE_FILE}/mainConfigure.h.in" mainConfigure.h)
 
 set(CURSES_NEED_NCURSES TRUE)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
+include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_BINARY_DIR})
